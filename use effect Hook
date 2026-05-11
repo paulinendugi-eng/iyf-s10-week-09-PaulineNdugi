@@ -1,1 +1,22 @@
-use
+import { useEffect } from "react";
+
+useEffect(() => {
+  // 1. runs every render
+});
+
+useEffect(() => {
+  // 2. runs once (on mount)
+}, []);
+
+useEffect(() => {
+  // 3. runs when state changes
+}, [state]);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    console.log("Tick");
+  }, 1000);
+
+  // cleanup (runs on unmount / before rerun)
+  return () => clearInterval(interval);
+}, []);
