@@ -1,1 +1,40 @@
+1. Setup
+JSX
+import { BrowserRouter } from "react-router-dom";
 
+<BrowserRouter>
+  <App />
+</BrowserRouter>
+2. Routes
+JSX
+import { Routes, Route } from "react-router-dom";
+
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/posts" element={<Posts />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
+3. Layout + Nested Routes
+JSX
+import { Outlet } from "react-router-dom";
+
+<Outlet />   // shows child pages
+4. Dynamic Route
+JSX
+<Route path="/posts/:id" element={<PostDetail />} />
+JSX
+import { useParams } from "react-router-dom";
+const { id } = useParams();
+5. Navigation
+JSX
+import { Link, NavLink } from "react-router-dom";
+
+<Link to="/about">About</Link>
+
+<NavLink to="/" className={({isActive}) => isActive ? "active" : ""} />
+6. Redirect
+JSX
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
+navigate("/");
