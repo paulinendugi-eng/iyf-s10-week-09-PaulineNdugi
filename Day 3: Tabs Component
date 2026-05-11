@@ -1,1 +1,62 @@
+1. Tabs Component
+JSX
+import { useState } from "react";
 
+export default function Tabs({ tabs }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  return (
+    <div>
+      {/* Tab Headers */}
+      <div style={{ display: "flex", gap: "10px" }}>
+        {tabs.map((tab, index) => (
+          <button
+            key={index}
+            onClick={() => setActiveIndex(index)}
+            style={{
+              padding: "8px 12px",
+              cursor: "pointer",
+              background: activeIndex === index ? "#333" : "#eee",
+              color: activeIndex === index ? "#fff" : "#000",
+              border: "none",
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Content */}
+      <div style={{ marginTop: "20px" }}>
+        {tabs[activeIndex].content}
+      </div>
+    </div>
+  );
+}
+2. Using the Tabs Component
+JSX
+import Tabs from "./Tabs";
+
+export default function App() {
+  const tabData = [
+    {
+      label: "Home",
+      content: <p>Welcome to Home tab</p>,
+    },
+    {
+      label: "Profile",
+      content: <p>This is your profile</p>,
+    },
+    {
+      label: "Settings",
+      content: <p>Change your settings here</p>,
+    },
+  ];
+
+  return (
+    <div>
+      <h1>My Tabs App</h1>
+      <Tabs tabs={tabData} />
+    </div>
+  );
+}
