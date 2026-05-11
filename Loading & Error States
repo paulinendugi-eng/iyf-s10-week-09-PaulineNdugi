@@ -1,1 +1,133 @@
+✅ LoadingSpinner.jsx
+JSX
+function LoadingSpinner({ size = 'medium', text = 'Loading...' }) {
+    return (
+        <div className={`loading-spinner ${size}`}>
+            <div className="spinner"></div>
+            <p>{text}</p>
+        </div>
+    );
+}
 
+export default LoadingSpinner;
+✅ ErrorMessage.jsx
+JSX
+function ErrorMessage({ message, onRetry }) {
+    return (
+        <div className="error-message">
+            <span className="error-icon">⚠️</span>
+            <p>{message}</p>
+
+            {onRetry && (
+                <button onClick={onRetry}>
+                    Try Again
+                </button>
+            )}
+        </div>
+    );
+}
+
+export default ErrorMessage;
+✅ PostList.jsx (Full Professional Version)
+JSX
+import { useEffect, useState } from 'react';
+import LoadingSpinner from './components/shared/LoadingSpinner';
+import ErrorMessage from './components/shared/ErrorMessage';
+import PostCard from './PostCard';
+
+function PostList() {
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const fetchPosts = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+
+            const response = await fetch('/api/posts');
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch posts (${response.status})`);
+            }
+
+            const data = await response.json();
+            setPosts(data);
+
+        } catch (err) {
+            setError(err.message || 'Something went wrong');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const loadPosts = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                const response = await fetch('/api/posts');
+                if (!response.ok) throw new Error('Failed to fetch posts');
+
+                const data = await response.json();
+
+                if (isMounted) {
+                    setPosts(data);
+                }
+
+            } catch (err) {
+                if (isMounted) {
+                    setError(err.message);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadPosts();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    // UI STATES
+    if (loading) {
+        return <LoadingSpinner text="Loading posts..." />;
+    }
+
+    if (error) {
+        return (
+            <ErrorMessage
+                message={error}
+                onRetry={fetchPosts}
+            />
+        );
+    }
+
+    if (posts.length === 0) {
+        return (
+            <div className="empty-state">
+                <p>No posts found.</p>
+                <button onClick={fetchPosts}>
+                    Refresh
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="post-list">
+            {posts.map(post => (
+                <PostCard key={post.id} post={post} />
+            ))}
+        </div>
+    );
+}
+
+export default PostList;
