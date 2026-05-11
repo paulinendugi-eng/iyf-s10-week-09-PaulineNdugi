@@ -1,1 +1,174 @@
+🔘 Button
+JSX
+// Button/Button.jsx
+function Button({
+    children,
+    variant = "primary",
+    size = "medium",
+    loading = false,
+    disabled = false,
+    fullWidth = false,
+    onClick,
+    type = "button"
+}) {
+    const base = "font-medium rounded transition";
 
+    const sizes = {
+        small: "px-3 py-1 text-sm",
+        medium: "px-4 py-2",
+        large: "px-6 py-3 text-lg"
+    };
+
+    const variants = {
+        primary: "bg-blue-500 text-white hover:bg-blue-600",
+        secondary: "bg-gray-200 text-black hover:bg-gray-300",
+        outline: "border border-blue-500 text-blue-500",
+        danger: "bg-red-500 text-white hover:bg-red-600",
+        ghost: "text-gray-600 hover:bg-gray-100"
+    };
+
+    return (
+        <button
+            type={type}
+            onClick={onClick}
+            disabled={disabled || loading}
+            className={`
+                ${base}
+                ${sizes[size]}
+                ${variants[variant]}
+                ${fullWidth ? "w-full" : ""}
+                ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+            `}
+        >
+            {loading ? "Loading..." : children}
+        </button>
+    );
+}
+
+export default Button;
+JavaScript
+// Button/index.js
+export { default } from "./Button";
+🧾 Input
+JSX
+// Input/Input.jsx
+function Input({
+    label,
+    error,
+    type = "text",
+    value,
+    onChange,
+    placeholder,
+    name,
+    required
+}) {
+    return (
+        <div className="mb-4">
+            {label && (
+                <label className="block mb-1 text-sm">
+                    {label} {required && "*"}
+                </label>
+            )}
+
+            <input
+                type={type}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                name={name}
+                className={`w-full px-3 py-2 border rounded ${
+                    error ? "border-red-500" : "border-gray-300"
+                }`}
+            />
+
+            {error && (
+                <p className="text-red-500 text-sm">{error}</p>
+            )}
+        </div>
+    );
+}
+
+export default Input;
+JavaScript
+// Input/index.js
+export { default } from "./Input";
+🃏 Card
+JSX
+// Card/Card.jsx
+function Card({ children, className = "" }) {
+    return (
+        <div className={`bg-white shadow rounded p-4 ${className}`}>
+            {children}
+        </div>
+    );
+}
+
+export default Card;
+JavaScript
+// Card/index.js
+export { default } from "./Card";
+🪟 Modal
+JSX
+// Modal/Modal.jsx
+function Modal({ isOpen, onClose, children }) {
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white p-6 rounded w-96">
+                <button onClick={onClose} className="float-right">
+                    ✕
+                </button>
+                {children}
+            </div>
+        </div>
+    );
+}
+
+export default Modal;
+JavaScript
+// Modal/index.js
+export { default } from "./Modal";
+👤 Avatar
+JSX
+// Avatar/Avatar.jsx
+function Avatar({ src, name = "User", size = 40 }) {
+    return (
+        <img
+            src={src}
+            alt={name}
+            style={{
+                width: size,
+                height: size,
+                borderRadius: "50%"
+            }}
+        />
+    );
+}
+
+export default Avatar;
+JavaScript
+// Avatar/index.js
+export { default } from "./Avatar";
+📦 MASTER EXPORT (VERY IMPORTANT)
+JavaScript
+// src/components/shared/index.js
+
+export { default as Button } from "./Button";
+export { default as Input } from "./Input";
+export { default as Card } from "./Card";
+export { default as Modal } from "./Modal";
+export { default as Avatar } from "./Avatar";
+🚀 HOW YOU USE IT IN ONE LINE
+JSX
+import { Button, Input, Card, Avatar } from "../components/shared";
+
+function App() {
+    return (
+        <Card>
+            <Avatar src="https://i.pravatar.cc/100" />
+            <Input label="Username" />
+            <Button variant="primary">Submit</Button>
+        </Card>
+    );
+}
