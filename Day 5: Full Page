@@ -1,1 +1,99 @@
+import { useEffect, useState } from "react";
 
+export default function UserProfilePage() {
+  const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [todos, setTodos] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [activeTab, setActiveTab] = useState("info");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const userRes = await fetch("https://jsonplaceholder.typicode.com/users/1");
+        const postsRes = await fetch("https://jsonplaceholder.typicode.com/posts?userId=1");
+        const todosRes = await fetch("https://jsonplaceholder.typicode.com/todos?userId=1");
+
+        if (!userRes.ok || !postsRes.ok || !todosRes.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const userData = await userRes.json();
+        const postsData = await postsRes.json();
+        const todosData = await todosRes.json();
+
+        setUser(userData);
+        setPosts(postsData);
+        setTodos(todosData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <p>Loading profile...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <h1>User Profile</h1>
+
+      {/* Tabs */}
+      <div style={{ marginBottom: "20px" }}>
+        <button onClick={() => setActiveTab("info")}>Info</button>
+        <button onClick={() => setActiveTab("posts")}>Posts</button>
+        <button onClick={() => setActiveTab("todos")}>Todos</button>
+      </div>
+
+      {/* INFO TAB */}
+      {activeTab === "info" && (
+        <div>
+          <h2>{user.name}</h2>
+          <p>Email: {user.email}</p>
+          <p>Phone: {user.phone}</p>
+          <p>Website: {user.website}</p>
+          <p>Company: {user.company.name}</p>
+        </div>
+      )}
+
+      {/* POSTS TAB */}
+      {activeTab === "posts" && (
+        <div>
+          <h2>User Posts</h2>
+          <ul>
+            {posts.map((post) => (
+              <li key={post.id}>
+                <strong>{post.title}</strong>
+                <p>{post.body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* TODOS TAB */}
+      {activeTab === "todos" && (
+        <div>
+          <h2>User Todos</h2>
+          <ul>
+            {todos.map((todo) => (
+              <li key={todo.id}>
+                {todo.title}{" "}
+                {todo.completed ? "✅ Done" : "❌ Pending"}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
