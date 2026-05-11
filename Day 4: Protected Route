@@ -1,1 +1,128 @@
+1. 🧠 ProtectedRoute.jsx
+JSX
+import { Navigate } from "react-router-dom";
 
+const ProtectedRoute = ({ children }) => {
+  const user = localStorage.getItem("user");
+
+  return user ? children : <Navigate to="/login" />;
+};
+
+export default ProtectedRoute;
+2. 🔑 Login.jsx
+JSX
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+const Login = () => {
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    if (!name.trim()) return;
+
+    localStorage.setItem("user", name);
+    navigate("/");
+  };
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h2>Login</h2>
+
+      <form onSubmit={handleLogin}>
+        <input
+          type="text"
+          placeholder="Enter username"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
+3. 🏠 Dashboard.jsx (Protected Page)
+JSX
+const Dashboard = () => {
+  const user = localStorage.getItem("user");
+
+  return (
+    <div style={{ padding: "20px" }}>
+      <h2>Dashboard 🔒</h2>
+      <p>Welcome back, {user} 👋</p>
+    </div>
+  );
+};
+
+export default Dashboard;
+4. 🧭 Header.jsx (Username + Logout)
+JSX
+import { useNavigate } from "react-router-dom";
+
+const Header = () => {
+  const user = localStorage.getItem("user");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  return (
+    <header
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "10px",
+        borderBottom: "1px solid #ccc",
+      }}
+    >
+      <h3>CommunityHub</h3>
+
+      {user && (
+        <div>
+          <span style={{ marginRight: "10px" }}>Hi, {user}</span>
+          <button onClick={handleLogout}>Logout</button>
+        </div>
+      )}
+    </header>
+  );
+};
+
+export default Header;
+5. 🌐 App.jsx (Routes Setup)
+JSX
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import Header from "./components/Header";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Header />
+
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected Route */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
