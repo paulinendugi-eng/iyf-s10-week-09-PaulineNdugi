@@ -1,1 +1,183 @@
+1️⃣ useLocalStorage Hook
+📁 hooks/useLocalStorage.js
+JavaScript
+import { useState, useEffect } from 'react';
 
+export default function useLocalStorage(key, initialValue) {
+  const [value, setValue] = useState(() => {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : initialValue;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [key, value]);
+
+  return [value, setValue];
+}
+📌 Usage: Settings Component
+JavaScript
+import useLocalStorage from '../hooks/useLocalStorage';
+
+function Settings() {
+  const [theme, setTheme] = useLocalStorage('theme', 'light');
+  const [fontSize, setFontSize] = useLocalStorage('fontSize', 16);
+
+  return (
+    <div>
+      <h2>Settings</h2>
+
+      <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+
+      <input
+        type="range"
+        min="12"
+        max="24"
+        value={fontSize}
+        onChange={(e) => setFontSize(Number(e.target.value))}
+      />
+
+      <p>Font size: {fontSize}px</p>
+    </div>
+  );
+}
+
+export default Settings;
+2️⃣ useToggle Hook
+📁 hooks/useToggle.js
+JavaScript
+import { useState } from 'react';
+
+export default function useToggle(initialValue = false) {
+  const [value, setValue] = useState(initialValue);
+
+  const toggle = () => setValue(v => !v);
+  const setTrue = () => setValue(true);
+  const setFalse = () => setValue(false);
+
+  return [value, { toggle, setTrue, setFalse }];
+}
+📌 Usage: Modal Component
+JavaScript
+import useToggle from '../hooks/useToggle';
+
+function Modal() {
+  const [isOpen, { toggle, setFalse }] = useToggle(false);
+
+  return (
+    <div>
+      <button onClick={toggle}>Open Modal</button>
+
+      {isOpen && (
+        <div className="modal">
+          <h3>Modal Content</h3>
+          <button onClick={setFalse}>Close</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Modal;
+3️⃣ useForm Hook
+📁 hooks/useForm.js
+JavaScript
+import { useState } from 'react';
+
+export default function useForm(initialValues, validate) {
+  const [values, setValues] = useState(initialValues);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  const handleChange = (e) => {
+    setValues({
+      ...values,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched({ ...touched, [name]: true });
+
+    if (validate) {
+      setErrors(validate(values));
+    }
+  };
+
+  const reset = () => {
+    setValues(initialValues);
+    setErrors({});
+    setTouched({});
+  };
+
+  return {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    reset
+  };
+}
+📌 Usage: Contact Form
+JavaScript
+import useForm from '../hooks/useForm';
+
+function ContactForm() {
+  const validate = (values) => {
+    const errors = {};
+
+    if (!values.email.includes('@')) {
+      errors.email = 'Invalid email';
+    }
+
+    return errors;
+  };
+
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    reset
+  } = useForm({ name: '', email: '' }, validate);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(values);
+    reset();
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        name="name"
+        value={values.name}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder="Name"
+      />
+
+      <input
+        name="email"
+        value={values.email}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        placeholder="Email"
+      />
+
+      {touched.email && errors.email && (
+        <p style={{ color: 'red' }}>{errors.email}</p>
+      )}
+
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+export default ContactForm;
