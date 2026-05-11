@@ -1,1 +1,74 @@
+✅ 1. CSS Modules (Scoped CSS)
+📁 Button.module.css
+CSS
+.button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
+.primary {
+  background: #007bff;
+  color: white;
+}
+
+.secondary {
+  background: #6c757d;
+  color: white;
+}
+⚛️ Button.jsx
+JSX
+import styles from './Button.module.css';
+
+function Button({ variant = "primary", children }) {
+  return (
+    <button className={`${styles.button} ${styles[variant]}`}>
+      {children}
+    </button>
+  );
+}
+✅ 2. Tailwind CSS (Utility Classes)
+📦 Install
+Bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+⚙️ tailwind.config.js
+JavaScript
+export default {
+  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  theme: { extend: {} },
+  plugins: [],
+}
+🎨 index.css
+CSS
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+🧱 Tailwind Card Example
+JSX
+function Card({ title, children }) {
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-xl font-semibold mb-4">{title}</h3>
+      <div className="text-gray-600">{children}</div>
+    </div>
+  );
+}
+🔘 Tailwind Button with Variants
+JSX
+function Button({ variant = "primary", children }) {
+  const base = "px-4 py-2 rounded font-medium transition-colors";
+
+  const variants = {
+    primary: "bg-blue-500 text-white hover:bg-blue-600",
+    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
+    danger: "bg-red-500 text-white hover:bg-red-600",
+  };
+
+  return (
+    <button className={`${base} ${variants[variant]}`}>
+      {children}
+    </button>
+  );
+}
